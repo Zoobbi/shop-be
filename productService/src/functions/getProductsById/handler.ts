@@ -2,7 +2,7 @@ import { formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
 import {getProductsFromMock} from "@libs/getProductsFromMock";
 
-const getProductsById = async (event) => {
+export const getProductsById = async (event) => {
   try {
     const { productId } = event.pathParameters;
     const products = await getProductsFromMock();
