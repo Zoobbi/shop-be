@@ -10,3 +10,7 @@ export const formatJSONResponse = (response, code = 200) => {
     body: JSON.stringify(response)
   }
 }
+
+export const allowHeaders = {
+  'Access-Control-Allow-Origin': '*',
+};
