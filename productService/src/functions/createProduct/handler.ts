@@ -51,38 +51,6 @@ export const createProduct: ValidatedEventAPIGatewayProxyEvent<any> = async (eve
         await db.put(paramsProduct).promise();
         await db.put(paramsStock).promise();
 
-
-
-
-        /*  db
-              .transactWrite({
-                  TransactItems: [
-                      {
-                          Put: {
-                              TableName: productsTable,
-                              Item: itemForProduct,
-                          },
-                      },
-                      {
-                          Put: {
-                              TableName: stockTable,
-                              Item: itemForStock,
-                          },
-                      },
-                  ],
-              })
-              .promise();*/
-
-  /*      await db.put({
-            TableName: productsTable,
-            Item: itemForProduct,
-        }).promise();
-
-        await db.put({
-            TableName: stockTable,
-            Item: itemForStock,
-        }).promise();*/
-
         return formatJSONResponse({ statusCode: 200, response: { ...itemForProduct, count }, headers });
     } catch (e) {
         console.error('Error during database request executing', e);
