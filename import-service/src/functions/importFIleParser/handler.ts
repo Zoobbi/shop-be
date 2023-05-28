@@ -6,10 +6,13 @@ import {
     GetObjectCommandOutput,
     S3Client
 } from '@aws-sdk/client-s3';
+import { SQS } from 'aws-sdk';
 import {formatJSONResponse} from '@libs/api-gateway';
 import * as console from "console";
 import { Readable } from 'stream';
 export const asStream = (response: GetObjectCommandOutput) => { return response.Body as Readable;};
+
+const SQSInstance = new SQS();
 
 // const { IMPORT_PRODUCT_BUCKET_NAME, REGION, IMPORT_PRODUCT_PARSED_CATALOG_NAME, IMPORT_PRODUCT_CATALOG_NAME } = process.env;
 
@@ -47,8 +50,11 @@ const importFileParser = async (event) => {
         };
 
         stream
-            .on('data',  (data) => {
-                console.log(' Parsed data: ', data);
+            .on('data', async (data) => {
+                await SQSInstance.sendMessage({
+                    QueueUrl: process.env.SQS_URL,
+                    MessageBody: JSON.stringify(data),
+                }).promise();
             })
             .on('end', moveFile);
     } catch (e) {
@@ -58,70 +64,3 @@ const importFileParser = async (event) => {
 };
 
 export const main = importFileParser;
-
-
-/*
-import { S3 } from 'aws-sdk';
-import { S3Event } from 'aws-lambda';
-import { formatJSONResponse } from '@libs/api-gateway';
-
-
-
-import csv from 'csv-parser';
-
-const s3 = new S3({ region: 'us-east-1' });
-const Bucket = 'uploaded-bucket-for-zoobbi-shop';
-
-const importFileParser = async (event: S3Event) => {
-  await Promise.all(
-    event.Records.map(({ s3: { object } }) => {
-      const s3Stream = s3
-        .getObject({
-          Bucket,
-          Key: object.key,
-        })
-        .createReadStream();
-
-      return new Promise<void>((resolve, reject) => {
-        s3Stream
-          .pipe(
-            csv({
-              headers: ['title', 'description', 'price', 'count'],
-              skipLines: 1,
-            })
-          )
-          .on('data', async (data) => {
-            console.log(data);
-          })
-          .on('error', (error) => {
-            console.log(error);
-            reject(error);
-          })
-          .on('end', async () => {
-            await s3
-              .copyObject({
-                Bucket,
-                CopySource: `${Bucket}/${object.key}`,
-                Key: object.key.replace('uploaded', 'parsed'),
-              })
-              .promise();
-
-            await s3
-              .deleteObject({
-                Bucket,
-                Key: object.key,
-              })
-              .promise();
-            resolve();
-          });
-      });
-    })
-  );
-
-  return formatJSONResponse({
-    message: 'success',
-  });
-};
-
-export const main = importFileParser;
-*/

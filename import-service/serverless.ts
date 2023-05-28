@@ -22,6 +22,7 @@ const serverlessConfiguration: AWS = {
             NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
             S3_BUCKET: 'uploaded-bucket-for-zoobbi-shop',
             S3_KEY_PRODUCTS: 'uploaded',
+            SQS_URL: { 'Fn::ImportValue': 'sqsURL' },
         },
         iamRoleStatements: [
             {
@@ -39,7 +40,12 @@ const serverlessConfiguration: AWS = {
                 Resource: [
                     "arn:aws:s3:::uploaded-bucket-for-zoobbi-shop/*"
                 ]
-            }
+            },
+            {
+                Effect: 'Allow',
+                Action: 'sqs:SendMessage',
+                Resource: { 'Fn::ImportValue': 'sqsARN' },
+            },
         ]
     },
 

@@ -15,11 +15,11 @@ export default {
                         }
                     }
                 },
-               /* response: {
+               response: {
                     headers: {
                         "Content-Type": "application/json"
                     }
-                }*/
+                }
             },
         },
     ],
