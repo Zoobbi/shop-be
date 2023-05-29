@@ -15,6 +15,13 @@ export default {
                         }
                     }
                 },
+                authorizer: {
+                    name: 'basicAuthorizer',
+                    arn: { 'Fn::ImportValue': 'authorizerArn' },
+                    resultTtlInSeconds: 0,
+                    identitySource: 'method.request.header.Authorization',
+                    type: 'token',
+                },
                response: {
                     headers: {
                         "Content-Type": "application/json"

@@ -11,8 +11,9 @@ export const catalogBatchProcess = async (event: SQSEvent) => {
         body: JSON.parse(record.body),
     }));
 
-    console.log(event.Records);
-    console.log(parsedRecords);
+    console.log('EVENT RECORD', event.Records);
+    console.log('EVENT RECORD', event);
+    console.log('PARSE RECORD', parsedRecords);
 
     const response = await dynamo
         .transactWrite({
